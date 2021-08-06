@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using FunctionApp.CircuitBreaker;
+using FunctionApp;
 using NUnit.Framework;
 
 namespace UnitTests

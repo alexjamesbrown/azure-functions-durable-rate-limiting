@@ -5,7 +5,7 @@ using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace FunctionApp.CircuitBreaker
+namespace FunctionApp
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class RateLimiter
