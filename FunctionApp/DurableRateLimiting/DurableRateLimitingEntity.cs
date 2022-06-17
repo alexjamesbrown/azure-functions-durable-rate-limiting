@@ -16,14 +16,18 @@ namespace FunctionApp
     [JsonObject(MemberSerialization.OptIn)]
     public class DurableRateLimitingEntity : IDurableRateLimitingEntity
     {
+        private readonly IDurableOrchestrationContext _context;
         private readonly ILogger _logger;
         private const string EntityName = nameof(DurableRateLimitingEntity);
         public static EntityId GetEntityId(string identifier) => new EntityId(EntityName, identifier);
 
-        public DurableRateLimitingEntity( ILogger logger)
+        public DurableRateLimitingEntity(ILogger logger)
         {
             _logger = logger;
         }
+
+        // Setup as a function to allow for unit testing
+        public Func<DateTime> CurrentDate = () => DateTime.UtcNow;
 
         [JsonProperty]
         public TimeSpan Window { get; set; }
@@ -38,7 +42,7 @@ namespace FunctionApp
         public DateTime? RequestDateTime { get; private set; }
 
         [JsonProperty]
-        public TimeSpan? LastDelay { get; private set; }
+        public TimeSpan? LastDelay { get; set; }
 
         public Task<TimeSpan> GetDelayBeforeNextRequest()
         {
@@ -48,17 +52,17 @@ namespace FunctionApp
             if (RequestCount < MaxRequests)
                 return Task.FromResult(TimeSpan.Zero);
 
-            var diff = DateTime.UtcNow.Subtract(RequestDateTime.Value);
-            
+            var diff = CurrentDate().Subtract(RequestDateTime.Value);
+
             if (diff <= Window)
             {
                 var delay = RequestDateTime
                     .Value.Add(Window)
-                    .Subtract(DateTime.UtcNow);
+                    .Subtract(CurrentDate());
 
                 if (LastDelay.HasValue)
                 {
-                    delay += LastDelay.Value;
+                    delay = LastDelay.Value.Add(delay);
                 }
 
                 LastDelay = delay;
@@ -74,29 +78,9 @@ namespace FunctionApp
             return Task.FromResult(TimeSpan.Zero);
         }
 
-        public Task<bool> IsRequestPermitted()
-        {
-            if (!RequestDateTime.HasValue)
-                return Task.FromResult(true);
-
-            if (RequestCount < MaxRequests)
-                return Task.FromResult(true);
-
-            var diff = DateTime.UtcNow.Subtract(RequestDateTime.Value);
-
-            if (diff <= Window)
-                return Task.FromResult(false);
-
-            // window has expired, reset
-            RequestDateTime = null;
-            RequestCount = 0;
-
-            return Task.FromResult(true);
-        }
-
         public Task RecordRequest()
         {
-            RequestDateTime ??= DateTime.UtcNow;
+            RequestDateTime ??= CurrentDate();
             RequestCount++;
 
             return Task.CompletedTask;
@@ -112,7 +96,7 @@ namespace FunctionApp
                 var e = new DurableRateLimitingEntity(logger)
                 {
                     MaxRequests = 1,
-                    Window = TimeSpan.FromSeconds(1),
+                    Window = TimeSpan.FromSeconds(30),
                     RequestDateTime = null,
                     LastDelay = null
                 };

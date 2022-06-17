@@ -18,7 +18,7 @@ namespace FunctionApp
         [FunctionName(nameof(DoSomething))]
         public async Task Run([ActivityTrigger] int iterationNumber, ILogger log)
         {
-            Console.WriteLine($"EXECUTED iterationNumber {iterationNumber}");
+            Console.WriteLine($"EXECUTED {iterationNumber}");
             await _requestRepository.RecordRequest(DateTime.UtcNow);
         }
     }
