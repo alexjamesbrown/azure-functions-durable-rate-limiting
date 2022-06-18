@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FunctionApp;
 using NUnit.Framework;
+using RateLimiting;
 
 namespace UnitTests
 {

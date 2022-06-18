@@ -1,6 +1,5 @@
-using System;
 
-namespace FunctionApp
+namespace RateLimiting
 {
     public class Limit
     {

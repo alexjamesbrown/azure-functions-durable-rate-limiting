@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using DurableRateLimiting;
 
 namespace UnitTests
 {

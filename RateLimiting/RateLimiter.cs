@@ -1,8 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace FunctionApp
+namespace RateLimiting
 {
     public class RateLimiter
     {

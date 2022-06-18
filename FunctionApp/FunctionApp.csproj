@@ -17,4 +17,10 @@
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="RateLimiting" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\DurableRateLimiting\DurableRateLimiting.csproj" />
+    </ItemGroup>
 </Project>

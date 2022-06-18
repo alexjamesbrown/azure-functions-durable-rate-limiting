@@ -1,11 +1,11 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using System.Threading.Tasks;
 
-namespace FunctionApp
+namespace DurableRateLimiting
 {
     public interface IDurableRateLimitingEntity
     {
@@ -19,6 +19,7 @@ namespace FunctionApp
         private readonly IDurableOrchestrationContext _context;
         private readonly ILogger _logger;
         private const string EntityName = nameof(DurableRateLimitingEntity);
+        
         public static EntityId GetEntityId(string identifier) => new EntityId(EntityName, identifier);
 
         public DurableRateLimitingEntity(ILogger logger)
@@ -26,7 +27,6 @@ namespace FunctionApp
             _logger = logger;
         }
 
-        // Setup as a function to allow for unit testing
         public Func<DateTime> CurrentDate = () => DateTime.UtcNow;
 
         [JsonProperty]
@@ -87,9 +87,7 @@ namespace FunctionApp
         }
 
         [FunctionName(EntityName)]
-        public static async Task Run(
-            [EntityTrigger] IDurableEntityContext context,
-            ILogger logger)
+        public static async Task Run([EntityTrigger] IDurableEntityContext context, ILogger logger)
         {
             if (!context.HasState)
             {

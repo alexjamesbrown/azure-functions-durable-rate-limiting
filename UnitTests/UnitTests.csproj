@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FunctionApp\FunctionApp.csproj" />
+      <ProjectReference Include="..\RateLimiting\RateLimiting.csproj" />
     </ItemGroup>
 
 </Project>

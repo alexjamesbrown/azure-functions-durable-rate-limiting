@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 
-namespace FunctionApp
+namespace DurableRateLimiting
 {
     public static class Extensions
     {
